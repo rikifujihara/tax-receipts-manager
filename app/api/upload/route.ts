@@ -1,5 +1,5 @@
 import { pool } from "@/lib/db";
-import { getOrCreateFolder } from "@/lib/google/drive";
+import { getOrCreateFolder, getOrCreateSheet } from "@/lib/google/drive";
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
@@ -43,11 +43,31 @@ export async function POST(req: NextRequest) {
   // Upload to Drive
   const drive = google.drive({ version: "v3", auth: oauth2Client });
   const l1 = await getOrCreateFolder(drive, "easy-receipts");
-  const l2 = await getOrCreateFolder(drive, "easy-receipts-FY2026", l1);
+  const l2 = await getOrCreateFolder(drive, "FY26", l1);
 
-  await drive.files.create({
+  const uploadedFile = await drive.files.create({
     requestBody: { name: file.name, parents: [l2] },
     media: { mimeType: file.type, body: Readable.from(buffer) },
+    fields: "id, webViewLink",
+  });
+
+  const receiptUrl = uploadedFile.data.webViewLink;
+
+  const sheets = google.sheets({ version: "v4", auth: oauth2Client });
+  const sheetId = await getOrCreateSheet(
+    drive,
+    oauth2Client,
+    "records-under-$300",
+    l2,
+  );
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId: sheetId,
+    range: "Sheet1!A:A",
+    valueInputOption: "RAW",
+    requestBody: {
+      values: [[receiptUrl, "hello"]],
+    },
   });
 
   return NextResponse.json({

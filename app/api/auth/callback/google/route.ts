@@ -1,5 +1,6 @@
 import { google } from "googleapis";
 import { NextRequest, NextResponse } from "next/server";
+import { pool } from "@/lib/db";
 
 export async function GET(req: NextRequest) {
   const code = req.nextUrl.searchParams.get("code");
@@ -18,9 +19,26 @@ export async function GET(req: NextRequest) {
   const email = data.email!;
   const google_user_id = data.id!;
 
+  // Upsert user
+  const res = await pool.query(
+    `INSERT INTO users (google_user_id, email, refresh_token)
+     VALUES ($1, $2, $3)
+     ON CONFLICT (google_user_id) DO UPDATE
+        SET refresh_token = EXCLUDED.refresh_token
+     RETURNING id`,
+    [google_user_id, email, tokens.refresh_token],
+  );
+
+  const user_id = res.rows[0].id;
+
   // Create session
   const session_id = crypto.randomUUID();
-  const response = NextResponse.redirect("/");
+  await pool.query(`INSERT INTO sessions (id, user_id) VALUES ($1, $2)`, [
+    session_id,
+    user_id,
+  ]);
+
+  const response = NextResponse.redirect(new URL("/", req.url));
   response.cookies.set({
     name: process.env.SESSION_COOKIE_NAME!,
     value: session_id,

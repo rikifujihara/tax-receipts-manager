@@ -39,6 +39,10 @@ export default function Home() {
         ) : (
           <Image src={fileUrl} alt="Receipt preview" />
         ))}
+      {file && fileUrl && (
+        <button onClick={handleExtractFields}>Extract fields</button>
+      )}
+
       <div className="flex flex-col">
         <label htmlFor="receipt-file">Receipt file</label>
         <input
@@ -143,5 +147,14 @@ export default function Home() {
     formData.append("dateRecordCreated", dateRecordCreated);
 
     await fetch("api/upload", { method: "POST", body: formData });
+  }
+
+  async function handleExtractFields() {
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("occupation", "software developer");
+
+    await fetch("api/file/extract-fields", { method: "POST", body: formData });
   }
 }

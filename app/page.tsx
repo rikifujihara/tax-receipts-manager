@@ -194,16 +194,11 @@ export default function Home() {
   async function handleUpload() {
     if (!file) return;
     const formData = new FormData();
-    formData.append("file", file);
-    formData.append("datePurchased", form.datePurchased);
-    formData.append("supplierName", form.supplierName);
-    formData.append("amount", form.amount);
-    formData.append("description", form.description);
-    formData.append("expenseType", form.expenseType);
-    formData.append("workRelatedPercentage", form.workRelatedPercentage);
     formData.append("workRelatedAmount", workRelatedAmount);
-    formData.append("nexusToJob", form.nexusToJob);
-    formData.append("dateRecordCreated", form.dateRecordCreated);
+
+    (Object.keys(form) as (keyof ReceiptFormState)[]).forEach((key) => {
+      formData.append(key, form[key]);
+    });
 
     await fetch("api/upload", { method: "POST", body: formData });
   }

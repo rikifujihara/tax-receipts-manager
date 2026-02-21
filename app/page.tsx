@@ -1,8 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { EXPENSE_TYPES } from "@/lib/constants";
+import { SHEET_COLUMNS } from "@/lib/constants";
 import Image from "next/image";
+import { ExtractedFieldsResponse, ReceiptFormState } from "@/lib/types";
 
 export default function Home() {
   const [file, setFile] = useState<File | null>(null);
@@ -16,6 +17,11 @@ export default function Home() {
   const [workRelatedAmount, setWorkRelatedAmount] = useState("");
   const [nexusToJob, setNexusToJob] = useState("");
   const [dateRecordCreated, setDateRecordCreated] = useState("");
+
+  const emptyForm = (): ReceiptFormState =>
+    Object.fromEntries(
+      Object.keys(SHEET_COLUMNS).map((key) => [key, ""]),
+    ) as ReceiptFormState;
 
   useEffect(() => {
     if (!file) {
@@ -83,18 +89,11 @@ export default function Home() {
               onChange={(e) => setDescription(e.target.value)}
             />
             <label htmlFor="expense-type">Expense type</label>
-            <select
+            <input
               id="expense-type"
               value={expenseType}
               onChange={(e) => setExpenseType(e.target.value)}
-            >
-              <option value="">Select...</option>
-              {EXPENSE_TYPES.map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+            ></input>
             <label htmlFor="work-related-percentage">
               Work-related percentage
             </label>
@@ -155,6 +154,13 @@ export default function Home() {
     formData.append("file", file);
     formData.append("occupation", "software developer");
 
-    await fetch("api/file/extract-fields", { method: "POST", body: formData });
+    const response = await fetch("api/file/extract-fields", {
+      method: "POST",
+      body: formData,
+    });
+
+    const data = (await response.json()) as ExtractedFieldsResponse;
+
+    setExtractedFields(data.fields);
   }
 }

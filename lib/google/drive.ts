@@ -1,4 +1,4 @@
-import { SHEET_COLUMNS } from "@/lib/constants";
+import { SHEET_COLUMN_NAMES } from "@/lib/constants";
 import { google, Auth, type drive_v3 } from "googleapis";
 
 export async function getOrCreateFolder(
@@ -56,7 +56,7 @@ export async function getOrCreateSheet(
     range: "Sheet1!A:A",
     valueInputOption: "RAW",
     requestBody: {
-      values: [[...SHEET_COLUMNS]],
+      values: [Object.keys(SHEET_COLUMN_NAMES)],
     },
   });
 

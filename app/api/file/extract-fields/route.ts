@@ -1,3 +1,4 @@
+import { ExtractedFieldsResponse } from "@/lib/types";
 import { GoogleGenAI } from "@google/genai";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -28,10 +29,11 @@ export async function POST(req: NextRequest) {
             Your response shape is as follows:
           {
             "datePurchased": "YYYY-MM-DD or null",
+            "expenseType": "The categorisation of this expense according to the ATO standards (e.g. donation, work related self education)",
             "supplierName": "string or null",
             "amount": "number or null",
             "description": "string or null",
-            "connection to work": "string or null - keep this short, simple and direct"
+            "nexusToJob": "string or null - keep this short, simple and direct"
           }`,
           },
         ],
@@ -40,5 +42,8 @@ export async function POST(req: NextRequest) {
   });
   const text = response.text ?? "{}";
   const clean = text.replace(/```json\n?|\n?```/g, "").trim();
-  return NextResponse.json({ fields: JSON.parse(clean) });
+  console.log("gemini response: ", clean);
+  return NextResponse.json({
+    fields: JSON.parse(clean),
+  } as ExtractedFieldsResponse);
 }

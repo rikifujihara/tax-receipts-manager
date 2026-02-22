@@ -9,6 +9,7 @@ import {
   ReceiptFormState,
 } from "@/lib/types";
 import { ArrowUp, Check, Loader2 } from "lucide-react";
+import FilePreview from "@/app/_components/file-preview";
 
 const today = new Date().toLocaleDateString("en-CA", {
   timeZone: "Australia/Sydney",
@@ -66,49 +67,12 @@ export default function Home() {
           Upload Tax Receipt
         </h1>
 
-        {/* File preview section */}
-        <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6 mb-8">
-          <div className="flex flex-col gap-4">
-            <label htmlFor="receipt-file" className="block">
-              <span className="text-sm font-semibold text-slate-700 mb-2 block">
-                Receipt file
-              </span>
-              <input
-                id="receipt-file"
-                type="file"
-                onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-                className="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-              />
-            </label>
-
-            {file && fileUrl && (
-              <div className="relative h-96 mt-4 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
-                {file.type === "application/pdf" ? (
-                  <iframe
-                    src={fileUrl}
-                    className="h-full w-full object-contain"
-                  />
-                ) : (
-                  <Image
-                    src={fileUrl}
-                    alt="Receipt preview"
-                    fill
-                    className="object-contain"
-                  />
-                )}
-              </div>
-            )}
-
-            {file && fileUrl && (
-              <button
-                onClick={handleExtractFields}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors duration-200 self-start"
-              >
-                Extract fields
-              </button>
-            )}
-          </div>
-        </div>
+        <FilePreview
+          file={file}
+          fileUrl={fileUrl}
+          setFile={setFile}
+          handleExtractFields={handleExtractFields}
+        />
 
         {/* Form section */}
         <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
@@ -120,6 +84,7 @@ export default function Home() {
               </p>
             </div>
           )}
+
           {extractionStatus === "file-selected" && (
             <div className="flex items-center gap-2">
               <ArrowUp />
@@ -128,12 +93,14 @@ export default function Home() {
               </p>
             </div>
           )}
+
           {extractionStatus === "loading" && (
             <div className="flex items-center gap-2">
               <Loader2 className="animate-spin text-blue-600" size={20} />
               <p className="text-blue-600 font-medium">Extracting fields...</p>
             </div>
           )}
+
           {uploadStatus === "success" && (
             <div className="flex items-center gap-2">
               <Check />
@@ -142,7 +109,7 @@ export default function Home() {
               </p>
             </div>
           )}
-
+          {/* TODO: extract fields */}
           {extractionStatus === "done" && (
             <div className="space-y-5">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -346,6 +313,7 @@ export default function Home() {
               </div>
             </div>
           )}
+          {/* TODO: add upload success summary */}
         </div>
       </div>
     </div>

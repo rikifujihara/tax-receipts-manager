@@ -1,5 +1,4 @@
 import { SHEET_NAME_PREFIX, TOP_LEVEL_FOLDER_NAME } from "@/lib/constants";
-import { pool } from "@/lib/db";
 import { getOrCreateFolder, getOrCreateSheet } from "@/lib/google/drive";
 import { currentFinancialYear } from "@/lib/helpers";
 import { google } from "googleapis";

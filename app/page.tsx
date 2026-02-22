@@ -8,7 +8,7 @@ import {
   ExtractedFieldsResponse,
   ReceiptFormState,
 } from "@/lib/types";
-import { ArrowUp, Loader2 } from "lucide-react";
+import { ArrowUp, Check, Loader2 } from "lucide-react";
 
 const today = new Date().toLocaleDateString("en-CA", {
   timeZone: "Australia/Sydney",
@@ -33,7 +33,11 @@ export default function Home() {
   const [fileUrl, setFileUrl] = useState<string | null>(null);
 
   const [extractionStatus, setExtractionStatus] = useState<
-    "loading" | "error" | "done" | "no-file"
+    "loading" | "error" | "done" | "no-file" | "file-selected"
+  >("no-file");
+
+  const [uploadStatus, setUploadStatus] = useState<
+    "loading" | "success" | "file-selected" | "error" | "no-file"
   >("no-file");
 
   const [form, setForm] = useState<ReceiptFormState>(emptyForm);
@@ -49,6 +53,8 @@ export default function Home() {
 
     const url = URL.createObjectURL(file);
     setFileUrl(url);
+
+    setExtractionStatus("file-selected");
 
     return () => URL.revokeObjectURL(url);
   }, [file]);
@@ -114,10 +120,26 @@ export default function Home() {
               </p>
             </div>
           )}
+          {extractionStatus === "file-selected" && (
+            <div className="flex items-center gap-2">
+              <ArrowUp />
+              <p className="text-gray-800 font-semibold">
+                Click &apos;Extract&apos; to analyse
+              </p>
+            </div>
+          )}
           {extractionStatus === "loading" && (
             <div className="flex items-center gap-2">
               <Loader2 className="animate-spin text-blue-600" size={20} />
               <p className="text-blue-600 font-medium">Extracting fields...</p>
+            </div>
+          )}
+          {uploadStatus === "success" && (
+            <div className="flex items-center gap-2">
+              <Check />
+              <p className="text-gray-800 font-semibold">
+                Success! Click &apos;Choose File&apos; upload another
+              </p>
             </div>
           )}
 
@@ -313,9 +335,13 @@ export default function Home() {
               <div className="pt-2">
                 <button
                   onClick={handleUpload}
-                  className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 w-full md:w-auto"
+                  disabled={uploadStatus === "loading"}
+                  className={`flex gap-2 items-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition-colors duration-200 md:w-auto ${uploadStatus === "loading" && "bg-gray-400 hover:bg-gray-400"}`}
                 >
-                  Upload
+                  {uploadStatus === "loading" && (
+                    <Loader2 className="animate-spin text-white" size={20} />
+                  )}
+                  Save to Drive
                 </button>
               </div>
             </div>
@@ -327,6 +353,7 @@ export default function Home() {
 
   async function handleUpload() {
     if (!file) return;
+    setUploadStatus("loading");
     const formData = new FormData();
     formData.append("file", file);
     formData.append("workRelatedAmount", workRelatedAmount);
@@ -336,6 +363,8 @@ export default function Home() {
     });
 
     await fetch("api/upload", { method: "POST", body: formData });
+    setUploadStatus("success");
+    setExtractionStatus("no-file");
   }
 
   async function handleExtractFields() {

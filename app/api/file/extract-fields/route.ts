@@ -28,12 +28,12 @@ export async function POST(req: NextRequest) {
             The receipt may have a connection to the purchaser's job of: ${occupation}
             Your response shape is as follows:
           {
-            "datePurchased": "YYYY-MM-DD or null",
+            "datePurchased": "YYYY-MM-DD or ''",
             "expenseType": "The categorisation of this expense according to the ATO standards (e.g. donation, work related self education)",
-            "supplierName": "string or null",
-            "amount": "number or null",
-            "description": "string or null",
-            "nexusToJob": "string or null - keep this short, simple and direct"
+            "supplierName": "string or ''",
+            "amount": "number or ''",
+            "description": "string or ''",
+            "nexusToJob": "string or '' - keep this short, simple and direct"
           }`,
           },
         ],

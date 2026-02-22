@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
 
 export async function POST(req: NextRequest) {
+  // TODO: move session checking to proxy.ts
   const session_id = req.cookies.get(process.env.SESSION_COOKIE_NAME!)?.value;
 
   if (!session_id)

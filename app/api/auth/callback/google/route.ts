@@ -31,12 +31,26 @@ export async function GET(req: NextRequest) {
 
   const user_id = res.rows[0].id;
 
-  // Create session
-  const session_id = crypto.randomUUID();
-  await pool.query(`INSERT INTO sessions (id, user_id) VALUES ($1, $2)`, [
-    session_id,
-    user_id,
-  ]);
+  // Check for valid session
+  const sessionsRes = await pool.query(
+    "SELECT * FROM sessions WHERE user_id = $1 AND expires_at > NOW()",
+    [user_id],
+  );
+
+  const session = sessionsRes.rows[0];
+  let session_id = "";
+
+  if (session) {
+    session_id = session.id;
+  } else {
+    // Create session
+    const session_id = crypto.randomUUID();
+    const expires_at = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    await pool.query(
+      `INSERT INTO sessions (id, user_id, expires_at) VALUES ($1, $2, $3)`,
+      [session_id, user_id, expires_at],
+    );
+  }
 
   const response = NextResponse.redirect(new URL("/", req.url));
   response.cookies.set({

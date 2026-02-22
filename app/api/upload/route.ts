@@ -3,32 +3,12 @@ import { pool } from "@/lib/db";
 import { getOrCreateFolder, getOrCreateSheet } from "@/lib/google/drive";
 import { currentFinancialYear } from "@/lib/helpers";
 import { google } from "googleapis";
+import { headers } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { Readable } from "stream";
 
 export async function POST(req: NextRequest) {
-  // TODO: move session checking to proxy.ts
-  const session_id = req.cookies.get(process.env.SESSION_COOKIE_NAME!)?.value;
-
-  if (!session_id)
-    return NextResponse.json({ error: "Not logged in" }, { status: 401 });
-
-  const sessionRes = await pool.query(
-    "SELECT user_id FROM sessions WHERE id = $1",
-    [session_id],
-  );
-
-  if (!sessionRes.rows[0])
-    return NextResponse.json({ error: "Invalid session" });
-
-  const user_id = sessionRes.rows[0].user_id;
-
-  // Get user details from DB
-  const userRes = await pool.query(
-    "SELECT refresh_token, spreadsheet_id FROM users WHERE id = $1",
-    [user_id],
-  );
-  const user = userRes.rows[0];
+  const refreshToken = (await headers()).get("x-refresh-token");
 
   // Parse file from FormData
   const formData = await req.formData();
@@ -50,7 +30,7 @@ export async function POST(req: NextRequest) {
     process.env.GOOGLE_CLIENT_SECRET,
   );
 
-  oauth2Client.setCredentials({ refresh_token: user.refresh_token });
+  oauth2Client.setCredentials({ refresh_token: refreshToken });
 
   // Upload to Drive
   const drive = google.drive({ version: "v3", auth: oauth2Client });

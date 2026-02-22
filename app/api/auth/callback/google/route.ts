@@ -38,6 +38,7 @@ export async function GET(req: NextRequest) {
   );
 
   const session = sessionsRes.rows[0];
+
   let session_id = "";
 
   if (session) {

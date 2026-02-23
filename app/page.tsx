@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SHEET_COLUMNS } from "@/lib/constants";
+import { FORM_STATE_FIELDS, SHEET_COLUMNS } from "@/lib/constants";
 import {
   ColumnKey,
   ExtractedFieldsResponse,
@@ -25,7 +25,7 @@ const initialFormValues: Partial<Record<ColumnKey, string>> = {
 
 const emptyForm = (): ReceiptFormState =>
   Object.fromEntries(
-    Object.keys(SHEET_COLUMNS).map((key) => [
+    Object.keys(FORM_STATE_FIELDS).map((key) => [
       key,
       initialFormValues[key as ColumnKey] ?? "",
     ]),
@@ -90,9 +90,9 @@ export default function Home() {
           />
         )}
 
-        {uploadStatus === "success" && <UploadSuccess form={form} />}
         <UploadSuccess
           form={form}
+          file={file}
           fileUrl={fileUrl}
           workRelatedAmount={workRelatedAmount}
         />
@@ -129,7 +129,6 @@ export default function Home() {
     });
 
     const data = (await response.json()) as ExtractedFieldsResponse;
-    console.log("dataResponse: ", data);
     setForm((prev) => ({ ...prev, ...data.fields }));
     setExtractionStatus("done");
   }

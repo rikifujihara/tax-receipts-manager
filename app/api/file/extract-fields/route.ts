@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
   });
   const text = response.text ?? "{}";
   const clean = text.replace(/```json\n?|\n?```/g, "").trim();
-  console.log("gemini response: ", clean);
   return NextResponse.json({
     fields: JSON.parse(clean),
   } as ExtractedFieldsResponse);

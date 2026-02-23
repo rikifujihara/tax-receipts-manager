@@ -1,4 +1,4 @@
-import { SHEET_COLUMNS } from "@/lib/constants";
+import { FORM_STATE_FIELDS, SHEET_COLUMNS } from "@/lib/constants";
 import { SetStateAction } from "react";
 
 export type ColumnKey = keyof typeof SHEET_COLUMNS;
@@ -9,10 +9,7 @@ export type ExtractedFieldsResponse = {
   fields: Omit<ReceiptRecord, "dateRecordCreated">;
 };
 
-export type ReceiptFormState = Omit<
-  ReceiptRecord,
-  "receiptFileUrl" | "workRelatedAmount"
->;
+export type ReceiptFormState = Record<keyof typeof FORM_STATE_FIELDS, string>;
 
 export type SetState<T> = React.Dispatch<SetStateAction<T>>;
 

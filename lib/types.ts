@@ -15,3 +15,17 @@ export type ReceiptFormState = Omit<
 >;
 
 export type SetState<T> = React.Dispatch<SetStateAction<T>>;
+
+export type ExtractionStatus =
+  | "loading"
+  | "error"
+  | "done"
+  | "no-file"
+  | "file-selected";
+
+export type UploadStatus =
+  | "loading"
+  | "success"
+  | "file-selected"
+  | "error"
+  | "no-file";

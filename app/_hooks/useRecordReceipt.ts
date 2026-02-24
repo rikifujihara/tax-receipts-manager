@@ -53,7 +53,7 @@ export default function useRecordReceipt() {
 
     setFileUrl(url);
 
-    // setExtractionStatus("file-selected");
+    setExtractionStatus("file-selected");
 
     return () => URL.revokeObjectURL(url);
   }, [file]);

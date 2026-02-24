@@ -1,4 +1,4 @@
-import { pool } from "@/lib/db";
+import { selectSessionAndRefreshToken } from "@/lib/repository/auth";
 import { NextRequest, NextResponse } from "next/server";
 
 export const runtime = "nodejs";
@@ -9,13 +9,7 @@ export default async function proxy(req: NextRequest) {
 
   if (!sessionId?.value) return handleUnauthenticated(req);
 
-  const res = await pool.query(
-    `SELECT sessions.id, users.refresh_token 
-   FROM sessions 
-   JOIN users ON users.id = sessions.user_id
-   WHERE sessions.id = $1 AND sessions.expires_at > NOW()`,
-    [sessionId.value],
-  );
+  const res = await selectSessionAndRefreshToken(sessionId.value);
 
   if (!res.rows[0]) return handleUnauthenticated(req);
 

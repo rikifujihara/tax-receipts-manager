@@ -1,36 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { FORM_STATE_FIELDS } from "@/lib/constants";
-import {
-  ColumnKey,
-  ExtractedFieldsResponse,
-  ExtractionStatus,
-  ReceiptFormState,
-  UploadStatus,
-} from "@/lib/types";
 import FilePreview from "@/app/_components/file-preview";
 import FormStatus from "@/app/_components/form-status";
 import Form from "@/app/_components/form";
 import UploadSuccess from "@/app/_components/UploadSuccess";
 import useRecordReceipt from "@/app/_hooks/useRecordReceipt";
-
-const today = new Date().toLocaleDateString("en-CA", {
-  timeZone: "Australia/Sydney",
-});
-
-const initialFormValues: Partial<Record<ColumnKey, string>> = {
-  workRelatedPercentage: "100",
-  dateRecordCreated: today,
-};
-
-const emptyForm = (): ReceiptFormState =>
-  Object.fromEntries(
-    Object.keys(FORM_STATE_FIELDS).map((key) => [
-      key,
-      initialFormValues[key as ColumnKey] ?? "",
-    ]),
-  ) as ReceiptFormState;
 
 export default function Home() {
   const {

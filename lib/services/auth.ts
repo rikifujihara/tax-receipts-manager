@@ -35,7 +35,7 @@ export async function googleOAuthCallback(req: NextRequest) {
     session_id = session.id;
   } else {
     // Create session
-    const session_id = crypto.randomUUID();
+    session_id = crypto.randomUUID();
     const expires_at = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
     await insertSession(session_id, user_id, expires_at);
   }

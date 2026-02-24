@@ -13,6 +13,7 @@ import FilePreview from "@/app/_components/file-preview";
 import FormStatus from "@/app/_components/form-status";
 import Form from "@/app/_components/form";
 import UploadSuccess from "@/app/_components/UploadSuccess";
+import useRecordReceipt from "@/app/_hooks/useRecordReceipt";
 
 const today = new Date().toLocaleDateString("en-CA", {
   timeZone: "Australia/Sydney",
@@ -32,35 +33,19 @@ const emptyForm = (): ReceiptFormState =>
   ) as ReceiptFormState;
 
 export default function Home() {
-  const [file, setFile] = useState<File | null>(null);
-
-  const [fileUrl, setFileUrl] = useState<string | null>(null);
-
-  const [extractionStatus, setExtractionStatus] =
-    useState<ExtractionStatus>("no-file");
-
-  const [uploadStatus, setUploadStatus] = useState<UploadStatus>("no-file");
-
-  const [form, setForm] = useState<ReceiptFormState>(emptyForm);
-
-  const workRelatedAmount = (
-    Number(form.amount) * Number(Number(form.workRelatedPercentage) * 0.01)
-  ).toFixed(2);
-
-  useEffect(() => {
-    if (!file) {
-      setFileUrl(null);
-      return;
-    }
-
-    const url = URL.createObjectURL(file);
-
-    setFileUrl(url);
-
-    setExtractionStatus("file-selected");
-
-    return () => URL.revokeObjectURL(url);
-  }, [file]);
+  const {
+    file,
+    setFile,
+    fileUrl,
+    extractionStatus,
+    uploadStatus,
+    form,
+    setForm,
+    workRelatedAmount,
+    handleUpload,
+    handleExtractFields,
+    resetState,
+  } = useRecordReceipt();
 
   return (
     <div className="min-h-screen  p-8">
@@ -106,45 +91,4 @@ export default function Home() {
       </div>
     </div>
   );
-
-  async function handleUpload() {
-    if (!file) return;
-    setUploadStatus("loading");
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("workRelatedAmount", workRelatedAmount);
-
-    (Object.keys(form) as (keyof ReceiptFormState)[]).forEach((key) => {
-      formData.append(key, form[key]);
-    });
-
-    await fetch("api/upload", { method: "POST", body: formData });
-    setUploadStatus("success");
-    setExtractionStatus("no-file");
-  }
-
-  async function handleExtractFields() {
-    if (!file) return;
-    setExtractionStatus("loading");
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("occupation", "software developer");
-
-    const response = await fetch("api/file/extract-fields", {
-      method: "POST",
-      body: formData,
-    });
-
-    const data = (await response.json()) as ExtractedFieldsResponse;
-    setForm((prev) => ({ ...prev, ...data.fields }));
-    setExtractionStatus("success");
-  }
-
-  function resetState() {
-    setFile(null);
-    setFileUrl(null);
-    setExtractionStatus("no-file");
-    setUploadStatus("no-file");
-    setForm(emptyForm());
-  }
 }

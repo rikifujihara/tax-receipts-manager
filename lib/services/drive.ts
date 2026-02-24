@@ -56,7 +56,7 @@ export async function getOrCreateSheet(
     range: "Sheet1!A:A",
     valueInputOption: "RAW",
     requestBody: {
-      values: [Object.keys(SHEET_COLUMN_NAMES)],
+      values: [SHEET_COLUMN_NAMES],
     },
   });
 

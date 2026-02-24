@@ -3,6 +3,7 @@ import { ArrowUp, Loader2 } from "lucide-react";
 
 export default function FormStatus({
   extractionStatus,
+  uploadStatus,
 }: {
   extractionStatus: ExtractionStatus;
   uploadStatus: UploadStatus;
@@ -31,6 +32,20 @@ export default function FormStatus({
         <div className="flex items-center gap-2">
           <Loader2 className="animate-spin text-blue-600" size={20} />
           <p className="text-blue-600 font-medium">Extracting fields...</p>
+        </div>
+      )}
+      {uploadStatus === "error" && (
+        <div className="flex items-center gap-2">
+          <p className="text-gray-800 font-semibold">
+            Something went wrong with the upload - please try again
+          </p>
+        </div>
+      )}
+      {extractionStatus === "error" && (
+        <div className="flex items-center gap-2">
+          <p className="text-gray-800 font-semibold">
+            Something went wrong with the field extraction - please try again
+          </p>
         </div>
       )}
     </div>

@@ -3,7 +3,6 @@ export const currentFinancialYear = () => {
     new Date().toLocaleDateString("en-AU", {
       timeZone: "Australia/Sydney",
       month: "numeric",
-      year: "numeric",
     }),
   );
   const year = Number(

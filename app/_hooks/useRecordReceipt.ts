@@ -59,36 +59,44 @@ export default function useRecordReceipt() {
   }, [file]);
 
   async function handleUpload() {
-    if (!file) return;
-    setUploadStatus("loading");
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("workRelatedAmount", workRelatedAmount);
+    try {
+      if (!file) return;
+      setUploadStatus("loading");
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("workRelatedAmount", workRelatedAmount);
 
-    (Object.keys(form) as (keyof ReceiptFormState)[]).forEach((key) => {
-      formData.append(key, form[key]);
-    });
+      (Object.keys(form) as (keyof ReceiptFormState)[]).forEach((key) => {
+        formData.append(key, form[key]);
+      });
 
-    await fetch("api/upload", { method: "POST", body: formData });
-    setUploadStatus("success");
-    setExtractionStatus("no-file");
+      await fetch("api/upload", { method: "POST", body: formData });
+      setUploadStatus("success");
+      setExtractionStatus("no-file");
+    } catch {
+      setUploadStatus("error");
+    }
   }
 
   async function handleExtractFields() {
-    if (!file) return;
-    setExtractionStatus("loading");
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("occupation", "software developer");
+    try {
+      if (!file) return;
+      setExtractionStatus("loading");
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("occupation", "software developer");
 
-    const response = await fetch("api/file/extract-fields", {
-      method: "POST",
-      body: formData,
-    });
+      const response = await fetch("api/file/extract-fields", {
+        method: "POST",
+        body: formData,
+      });
 
-    const data = (await response.json()) as ExtractedFieldsResponse;
-    setForm((prev) => ({ ...prev, ...data.fields }));
-    setExtractionStatus("success");
+      const data = (await response.json()) as ExtractedFieldsResponse;
+      setForm((prev) => ({ ...prev, ...data.fields }));
+      setExtractionStatus("success");
+    } catch {
+      setExtractionStatus("error");
+    }
   }
 
   function resetState() {

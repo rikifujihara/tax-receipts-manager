@@ -16,7 +16,7 @@ export type SetState<T> = React.Dispatch<SetStateAction<T>>;
 export type ExtractionStatus =
   | "loading"
   | "error"
-  | "done"
+  | "success"
   | "no-file"
   | "file-selected";
 

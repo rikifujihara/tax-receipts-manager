@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FORM_STATE_FIELDS, SHEET_COLUMNS } from "@/lib/constants";
+import { FORM_STATE_FIELDS } from "@/lib/constants";
 import {
   ColumnKey,
   ExtractedFieldsResponse,
@@ -42,6 +42,7 @@ export default function Home() {
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>("no-file");
 
   const [form, setForm] = useState<ReceiptFormState>(emptyForm);
+
   const workRelatedAmount = (
     Number(form.amount) * Number(Number(form.workRelatedPercentage) * 0.01)
   ).toFixed(2);
@@ -53,6 +54,7 @@ export default function Home() {
     }
 
     const url = URL.createObjectURL(file);
+
     setFileUrl(url);
 
     setExtractionStatus("file-selected");
@@ -66,21 +68,24 @@ export default function Home() {
         <h1 className="text-4xl font-bold text-slate-900 mb-8">
           Upload Tax Receipt
         </h1>
+        {uploadStatus !== "success" && (
+          <FilePreview
+            file={file}
+            fileUrl={fileUrl}
+            setFile={setFile}
+            handleExtractFields={handleExtractFields}
+          />
+        )}
 
-        <FilePreview
-          file={file}
-          fileUrl={fileUrl}
-          setFile={setFile}
-          handleExtractFields={handleExtractFields}
-        />
-
-        <FormStatus
-          extractionStatus={extractionStatus}
-          uploadStatus={uploadStatus}
-        />
+        {extractionStatus !== "success" && uploadStatus !== "success" && (
+          <FormStatus
+            extractionStatus={extractionStatus}
+            uploadStatus={uploadStatus}
+          />
+        )}
 
         {/* Form section */}
-        {extractionStatus === "done" && (
+        {extractionStatus === "success" && uploadStatus !== "success" && (
           <Form
             form={form}
             setForm={setForm}
@@ -89,13 +94,15 @@ export default function Home() {
             uploadStatus={uploadStatus}
           />
         )}
-
-        <UploadSuccess
-          form={form}
-          file={file}
-          fileUrl={fileUrl}
-          workRelatedAmount={workRelatedAmount}
-        />
+        {uploadStatus === "success" && (
+          <UploadSuccess
+            form={form}
+            file={file}
+            fileUrl={fileUrl}
+            workRelatedAmount={workRelatedAmount}
+            resetState={resetState}
+          />
+        )}
       </div>
     </div>
   );
@@ -130,6 +137,14 @@ export default function Home() {
 
     const data = (await response.json()) as ExtractedFieldsResponse;
     setForm((prev) => ({ ...prev, ...data.fields }));
-    setExtractionStatus("done");
+    setExtractionStatus("success");
+  }
+
+  function resetState() {
+    setFile(null);
+    setFileUrl(null);
+    setExtractionStatus("no-file");
+    setUploadStatus("no-file");
+    setForm(emptyForm());
   }
 }

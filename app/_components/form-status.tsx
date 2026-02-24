@@ -1,9 +1,8 @@
 import { ExtractionStatus, UploadStatus } from "@/lib/types";
-import { ArrowUp, Loader2, Check } from "lucide-react";
+import { ArrowUp, Loader2 } from "lucide-react";
 
 export default function FormStatus({
   extractionStatus,
-  uploadStatus,
 }: {
   extractionStatus: ExtractionStatus;
   uploadStatus: UploadStatus;
@@ -23,7 +22,7 @@ export default function FormStatus({
         <div className="flex items-center gap-2">
           <ArrowUp />
           <p className="text-gray-800 font-semibold">
-            Click &apos;Extract&apos; to analyse
+            Click &apos;Extract fields&apos; to analyse
           </p>
         </div>
       )}

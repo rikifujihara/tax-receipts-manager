@@ -34,8 +34,3 @@ export const SHEET_COLUMNS = {
 
 ![alt text](image.png)
 ![alt text](image-1.png)
-## Components getting too big
-### Issue
-Components were getting too large and unwieldy since all the UI code started off in the page.tsx files.
-### Solution
-I kept the state, handlers and effect at the top level and extracted smaller, more manageable components. This made the code far more readable and made edits and new features far easier.

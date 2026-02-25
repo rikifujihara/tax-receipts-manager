@@ -1,62 +1,54 @@
 import { google } from "googleapis";
-import { NextRequest, NextResponse } from "next/server";
 import { upsertUser } from "@/lib/repository/auth";
 import { selectValidSession, insertSession } from "@/lib/repository/auth";
 
-export async function googleOAuthCallback(req: NextRequest) {
-  const code = req.nextUrl.searchParams.get("code");
-  if (!code) return NextResponse.json({ error: "No code" }, { status: 400 });
+export async function googleOAuthCallback(code: string) {
+  // Initialise oauth client
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.GOOGLE_REDIRECT_URI,
   );
 
+  // Exchange code for tokens, authenticate our oauth client
   const { tokens } = await oauth2Client.getToken(code);
   oauth2Client.setCredentials(tokens);
-
   const oauth2 = google.oauth2({ version: "v2", auth: oauth2Client });
+
+  // Get user's info from oauth
   const { data } = await oauth2.userinfo.get();
   const email = data.email!;
-  const google_user_id = data.id!;
+  const googleUserId = data.id!;
 
-  const res = await upsertUser(google_user_id, email, tokens.refresh_token!);
+  // Upsert and return user from db
+  const res = await upsertUser(googleUserId, email, tokens.refresh_token!);
+  const userId = res.rows[0].id;
 
-  const user_id = res.rows[0].id;
-
-  // Check for valid session
-  const sessionsRes = await selectValidSession(user_id);
-
+  // Find valid session or create a new one
+  const sessionsRes = await selectValidSession(userId);
   const session = sessionsRes.rows[0];
-
-  let session_id = "";
-
+  let sessionId = "";
   if (session) {
-    session_id = session.id;
+    sessionId = session.id;
   } else {
-    // Create session
-    session_id = crypto.randomUUID();
+    sessionId = crypto.randomUUID();
     const expires_at = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
-    await insertSession(session_id, user_id, expires_at);
+    await insertSession(sessionId, userId, expires_at);
   }
 
-  const response = NextResponse.redirect(new URL("/", req.url));
-  response.cookies.set({
-    name: process.env.SESSION_COOKIE_NAME!,
-    value: session_id,
-    httpOnly: true,
-    path: "/",
-  });
-  return response;
+  return sessionId;
 }
 
 export async function googleSigninRedirect() {
+  // Initialise oauth client
   const oauth2client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
     process.env.GOOGLE_CLIENT_SECRET,
     process.env.GOOGLE_REDIRECT_URI,
   );
 
+  // This is where the user will be directed to provide the app oauth access.
+  // Scopes that the app needs are defined here (their google drive and basic info)
   const url = oauth2client.generateAuthUrl({
     access_type: "offline",
     scope: [
@@ -68,5 +60,5 @@ export async function googleSigninRedirect() {
     prompt: "consent",
   });
 
-  return NextResponse.redirect(url);
+  return url;
 }

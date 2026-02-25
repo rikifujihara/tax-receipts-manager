@@ -1,3 +1,6 @@
+import { toAppError } from "@/lib/error";
+import { NextRequest, NextResponse } from "next/server";
+
 export const currentFinancialYear = () => {
   const month = Number(
     new Date().toLocaleDateString("en-AU", {
@@ -13,3 +16,17 @@ export const currentFinancialYear = () => {
   );
   return `FY${month >= 7 ? String(year + 1) : year}`;
 };
+
+// For wrapping routes with error catching
+export function withErrorHandling(
+  handler: (req: NextRequest) => Promise<NextResponse>,
+) {
+  return async function (req: NextRequest) {
+    try {
+      return await handler(req);
+    } catch (err) {
+      const appErr = toAppError(err);
+      NextResponse.json({ error: appErr.message }, { status: appErr.code });
+    }
+  };
+}

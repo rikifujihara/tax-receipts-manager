@@ -53,7 +53,7 @@ export async function getOrCreateSheet(
   const sheets = google.sheets({ version: "v4", auth: oauth2Client });
   await sheets.spreadsheets.values.append({
     spreadsheetId: sheetId,
-    range: "Sheet1!A:A",
+    range: "Sheet1!A:J",
     valueInputOption: "RAW",
     requestBody: {
       values: [SHEET_COLUMN_NAMES],

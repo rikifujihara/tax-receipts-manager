@@ -1,10 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
-import { NextRequest } from "next/server";
 
-export async function extractFields(req: NextRequest) {
-  const formData = await req.formData();
-  const file = formData.get("file") as File;
-  const occupation = formData.get("occupation") as string;
+export async function extractFields(file: File, occupation: string) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const base64 = buffer.toString("base64");
 

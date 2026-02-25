@@ -119,9 +119,9 @@ export const currentFinancialYear = (now = new Date()) => { ... }
 
 With the current implementation, testing "should return FY2026 for a date in August 2025" requires mocking `Date` globally. Accepting a `date` argument makes the function a pure function that's trivial to test.
 
-### 4. `uploadFile` manually re-extracts form fields, breaking the single source of truth — `lib/services/file-upload.ts:15-23`
+### 4. `saveRecord` manually re-extracts form fields, breaking the single source of truth — `lib/services/file-upload.ts:15-23`
 
-After all the work done with `SHEET_COLUMNS` and `FORM_STATE_FIELDS`, the `uploadFile` function manually re-extracts every field by name from FormData:
+After all the work done with `SHEET_COLUMNS` and `FORM_STATE_FIELDS`, the `saveRecord` function manually re-extracts every field by name from FormData:
 
 ```typescript
 const datePurchased = formData.get("datePurchased") as string;

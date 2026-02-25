@@ -1,5 +1,7 @@
 import { GoogleGenAI } from "@google/genai";
 
+// TODO: future feature - application allows user to configure their occupation
+// e.g. The receipt may have a connection to the purchaser's job of: ${occupation}
 export async function extractFields(file: File, occupation: string) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const base64 = buffer.toString("base64");
@@ -20,7 +22,6 @@ export async function extractFields(file: File, occupation: string) {
             text: `Extract the following fields from this receipt as JSON only, no markdown.
             This is one receipt, so you will return this object below, once.
             The fields are going to be used for receipt record keeping for tax purposes.
-            The receipt may have a connection to the purchaser's job of: ${occupation}
             Your response shape is as follows:
           {
             "datePurchased": "YYYY-MM-DD or ''",

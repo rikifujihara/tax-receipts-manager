@@ -3,6 +3,7 @@ import { ReceiptFormState } from "@/lib/types";
 import { Check } from "lucide-react";
 import Image from "next/image";
 
+// TODO: future feature - return the links for both the receipt, the sheet and the drive folder
 export default function UploadSuccess({
   form,
   file,
@@ -53,12 +54,25 @@ export default function UploadSuccess({
             <h3 className="block text-sm font-semibold text-slate-700 mb-2">
               Receipt
             </h3>
-            <div className="relative h-80 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+            <div
+              className={`relative rounded-lg overflow-hidden border border-slate-200 bg-slate-50 ${file.name.toLowerCase().endsWith(".heic") ? "" : "h-80"}`}
+            >
               {file.type === "application/pdf" ? (
                 <iframe
                   src={fileUrl}
                   className="h-full w-full object-contain"
                 />
+              ) : file.name.toLowerCase().endsWith(".heic") ? (
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="flex flex-col">
+                    <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
+                      HEIC Image
+                    </p>
+                    <p className="text-sm font-semibold text-slate-700 break-all">
+                      {file.name}
+                    </p>
+                  </div>
+                </div>
               ) : (
                 <Image
                   src={fileUrl}

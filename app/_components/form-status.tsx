@@ -12,7 +12,7 @@ export default function FormStatus({
     <div className="bg-white rounded-lg shadow-sm border border-slate-200 p-6">
       {extractionStatus === "no-file" && (
         <div className="flex items-center gap-2">
-          <ArrowUp />
+          <ArrowUp className="text-gray-800 " />
           <p className="text-gray-800 font-semibold">
             Click &apos;Choose File&apos; to get started
           </p>

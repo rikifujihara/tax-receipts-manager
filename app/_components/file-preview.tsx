@@ -28,9 +28,22 @@ export default function FilePreview({
         </label>
 
         {file && fileUrl && (
-          <div className="relative h-96 mt-4 rounded-lg overflow-hidden border border-slate-200 bg-slate-50">
+          <div
+            className={`relative mt-4 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 ${file.name.toLowerCase().endsWith(".heic") ? "" : "h-96"}`}
+          >
             {file.type === "application/pdf" ? (
               <iframe src={fileUrl} className="h-full w-full object-contain" />
+            ) : file.name.toLowerCase().endsWith(".heic") ? (
+              <div className="flex items-center gap-3 px-4 py-3">
+                <div className="flex flex-col">
+                  <p className="text-xs font-medium text-slate-400 uppercase tracking-wide">
+                    HEIC Image
+                  </p>
+                  <p className="text-sm font-semibold text-slate-700 break-all">
+                    {file.name}
+                  </p>
+                </div>
+              </div>
             ) : (
               <Image
                 src={fileUrl}

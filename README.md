@@ -1,33 +1,30 @@
-# ATO tax record tool
+# ATO Tax Record Tool
+
+**Stack:** Next.js · TypeScript · Google Gemini · Google Sheets/Drive · PostgreSQL · Tailwind CSS
+
 ## Pain point
-As an employee, I have certain deductible expenses. To claim them, the ATO requires that I keep a record of the transactions and relevant evidence.
-This includes info like date purchased, nexus to work, work related percentage, etc.
-If I have a paid subscription that relates to my work, I can claim it as an expense, but it means manual data entry into my google sheets and manually uploading the file to google drive and linking the records correctly.
+As an employee with deductible expenses, the ATO requires records of transactions with details like date, supplier, work-related percentage, and nexus to job. Doing this manually meant entering data into Google Sheets and uploading files to Drive by hand.
 
 ## Solution
-An app that takes a receipt, extracts the fields required by the ATO, uploads the receipt and records the details in Google Sheets with the receipt linked.
+Upload a receipt image, and the app uses Gemini to extract the required fields, stores the file in Google Drive, and appends a linked record to Google Sheets.
 
-# Challenges/Learnings
+## Challenges/Learnings
 
-## Knowledge leak - Receipt form/fields names
-### Issue
-The fields that are eventually stored in google sheets (amount, description etc) need to be known in various places across the app, and they need to be consistent - the backend expects certain fields to be present/have particular spellings and any discrepancies will cause errors and incorrect records. Changing column names in one place means having to update the names correctly everywhere else.
+**Knowledge leak — field names**
 
-### Solution
-I created types based on a unified record of column names, which led to cleaner code that relied on a single source of truth for column names, and used types to make it much it much safer and easier to make changes/add features.
+Field names needed to stay consistent across the frontend form, API validation, and Google Sheets columns. A mismatch anywhere would cause silent errors or broken records.
 
-``` typescript
-// Unified constant
+I created a single `SHEET_COLUMNS` constant that all types and field references derive from, so there's one place to change and TypeScript catches anything that falls out of sync.
+
+```typescript
 export const SHEET_COLUMNS = {
   datePurchased: "Date purchased",
   supplierName: "Supplier name",
   amount: "Amount",
-  description: "Description",
-  expenseType: "Expense type",
-  workRelatedPercentage: "Work-related percentage",
-  workRelatedAmount: "Work-related amount",
-  nexusToJob: "Nexus to job",
-  dateRecordCreated: "Date record created",
-  receiptFileUrl: "Receipt file URL",
+  // ...
 } as const;
 ```
+
+**Service/route separation**
+
+Early on, business logic was mixed into route handlers. I refactored to isolate services (AI extraction, Drive upload, Sheets write) from routes, and wrapped routes in an error-handling HOF to avoid repetitive try/catch.

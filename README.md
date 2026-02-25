@@ -31,6 +31,3 @@ export const SHEET_COLUMNS = {
   receiptFileUrl: "Receipt file URL",
 } as const;
 ```
-
-![alt text](image.png)
-![alt text](image-1.png)

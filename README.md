@@ -8,6 +8,12 @@ As an employee with deductible expenses, the ATO requires records of transaction
 ## Solution
 Upload a receipt image, and the app uses Gemini to extract the required fields, stores the file in Google Drive, and appends a linked record to Google Sheets.
 
+## Demo
+<video autoplay loop muted playsinline>
+  <source src="demo.mp4" type="video/mp4">
+</video>
+
+
 ## Challenges/Learnings
 
 **Knowledge leak — field names**

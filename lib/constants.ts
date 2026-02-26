@@ -1,4 +1,4 @@
-export const SHEET_NAME_PREFIX = "receipt-records-under-$300-";
+export const SHEET_NAME_PREFIX = "receipt-records-";
 
 export const SHEET_COLUMNS = {
   datePurchased: "Date purchased",
@@ -7,9 +7,9 @@ export const SHEET_COLUMNS = {
   description: "Description",
   expenseType: "Expense type",
   workRelatedPercentage: "Work-related percentage",
-  workRelatedAmount: "Work-related amount",
   nexusToJob: "Nexus to job",
   dateRecordCreated: "Date record created",
+  workRelatedAmount: "Work-related amount",
   receiptFileUrl: "Receipt file URL",
 } as const;
 

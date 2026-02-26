@@ -13,6 +13,7 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
   // Parse file and form fields from FormData
   const formData = await req.formData();
   const file = formData.get("file") as File;
+  const workRelatedAmount = formData.get("workRelatedAmount");
   if (!file) throw new AppError("Missing required fields", 400);
 
   const formStateFields = Object.fromEntries(
@@ -26,7 +27,7 @@ export const POST = withErrorHandling(async (req: NextRequest) => {
     ),
   ) as ReceiptFormState;
 
-  await saveRecord({ refreshToken, formStateFields, file });
+  await saveRecord({ refreshToken, formStateFields, file, workRelatedAmount });
 
   return NextResponse.json({
     success: true,

@@ -10,10 +10,12 @@ export async function saveRecord({
   refreshToken,
   formStateFields,
   file,
+  workRelatedAmount,
 }: {
   refreshToken: string;
   formStateFields: ReceiptFormState;
   file: File;
+  workRelatedAmount: string;
 }) {
   const oauth2Client = new google.auth.OAuth2(
     process.env.GOOGLE_CLIENT_ID,
@@ -33,6 +35,7 @@ export async function saveRecord({
     oauth2Client,
     parentFolderId: l2,
     formStateFields,
+    workRelatedAmount,
     receiptUrl,
   });
 }
@@ -67,12 +70,14 @@ async function appendToSheet({
   parentFolderId,
   formStateFields,
   receiptUrl,
+  workRelatedAmount,
 }: {
   drive: drive_v3.Drive;
   oauth2Client: Auth.OAuth2Client;
   parentFolderId: string;
   formStateFields: ReceiptFormState;
   receiptUrl: string;
+  workRelatedAmount: string;
 }) {
   const sheetName = SHEET_NAME_PREFIX + currentFinancialYear();
 
@@ -91,7 +96,9 @@ async function appendToSheet({
     range: "Sheet1!A:A",
     valueInputOption: "RAW",
     requestBody: {
-      values: [[...Object.values(formStateFields), receiptUrl]],
+      values: [
+        [...Object.values(formStateFields), workRelatedAmount, receiptUrl],
+      ],
     },
   });
 }

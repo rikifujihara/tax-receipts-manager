@@ -8,6 +8,7 @@ import {
 } from "@/lib/types";
 import { useState, useEffect } from "react";
 
+// TODO: handle edge case of stale date in module
 const today = new Date().toLocaleDateString("en-CA", {
   timeZone: "Australia/Sydney",
 });

@@ -74,6 +74,7 @@ export default function useRecordReceipt() {
       await fetch("api/upload", { method: "POST", body: formData });
       setUploadStatus("success");
       setExtractionStatus("no-file");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch {
       setUploadStatus("error");
     }

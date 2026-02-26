@@ -1,8 +1,6 @@
 import { selectSessionAndRefreshToken } from "@/lib/repository/auth";
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = "nodejs";
-
 export default async function proxy(req: NextRequest) {
   // check for valid session
   const sessionId = req.cookies.get(process.env.SESSION_COOKIE_NAME!);

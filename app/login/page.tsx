@@ -5,8 +5,11 @@ export default async function Login() {
         <h1 className="text-xl font-semibold text-slate-900 mb-1">
           Easy Receipts
         </h1>
-        <p className="text-sm text-slate-500 mb-5">
+        <p className="text-sm text-slate-500 mb-3">
           Sign in to connect your google drive account
+        </p>
+        <p className="md:hidden text-xs text-amber-600 mb-5">
+          Note: mobile support is currently in development
         </p>
         <a
           href="/api/auth/google"

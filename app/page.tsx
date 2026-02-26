@@ -24,9 +24,12 @@ export default function Home() {
   return (
     <div className="min-h-screen  p-8">
       <div className="max-w-2xl mx-auto">
-        <h1 className="text-4xl font-bold text-slate-900 mb-8">
+        <h1 className="text-4xl font-bold text-slate-900 mb-2 md:mb-8">
           Upload Tax Receipt
         </h1>
+        <p className="md:hidden text-xs text-amber-600 mb-8">
+          Note: mobile support is currently in development
+        </p>
         {uploadStatus !== "success" && (
           <FilePreview
             file={file}

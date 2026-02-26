@@ -5,6 +5,7 @@ import { GoogleGenAI } from "@google/genai";
 export async function extractFields(file: File, occupation: string) {
   const buffer = Buffer.from(await file.arrayBuffer());
   const base64 = buffer.toString("base64");
+  const mimeType = resolveMimeType(file);
 
   const ai = new GoogleGenAI({});
   const response = await ai.models.generateContent({
@@ -14,7 +15,7 @@ export async function extractFields(file: File, occupation: string) {
         parts: [
           {
             inlineData: {
-              mimeType: file.type,
+              mimeType: mimeType,
               data: base64,
             },
           },
@@ -39,4 +40,17 @@ export async function extractFields(file: File, occupation: string) {
   const text = response.text ?? "{}";
   const clean = text.replace(/```json\n?|\n?```/g, "").trim();
   return { fields: JSON.parse(clean) };
+}
+
+function resolveMimeType(file: File): string {
+  if (file.type) return file.type;
+  const ext = file.name.split(".").pop()?.toLowerCase();
+  const map: Record<string, string> = {
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    png: "image/png",
+    webp: "image/webp",
+    pdf: "application/pdf",
+  };
+  return map[ext ?? ""] ?? "image/jpeg";
 }

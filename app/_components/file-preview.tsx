@@ -28,7 +28,7 @@ export default function FilePreview({
 
         {file && fileUrl && (
           <div
-            className={`relative mt-4 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 ${file.name.toLowerCase().endsWith(".heic") ? "" : "h-96"}`}
+            className={`relative mt-4 rounded-lg overflow-hidden border border-slate-200 bg-slate-50 ${file.name.toLowerCase().endsWith(".heic") ? "" : "h-40 md:h-96"}`}
           >
             {file.type === "application/pdf" ? (
               <iframe src={fileUrl} className="h-full w-full object-contain" />

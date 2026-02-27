@@ -1,4 +1,5 @@
 import { FORM_STATE_FIELDS } from "@/lib/constants";
+import { compressIfNeeded } from "@/lib/helpers";
 import {
   ColumnKey,
   ExtractedFieldsResponse,
@@ -59,6 +60,11 @@ export default function useRecordReceipt() {
     return () => URL.revokeObjectURL(url);
   }, [file]);
 
+  async function handleFileChange(file: File | null) {
+    if (!file) return setFile(null);
+    setFile(await compressIfNeeded(file));
+  }
+
   async function handleUpload() {
     try {
       if (!file) return;
@@ -111,7 +117,7 @@ export default function useRecordReceipt() {
 
   return {
     file,
-    setFile,
+    handleFileChange,
     fileUrl,
     extractionStatus,
     uploadStatus,

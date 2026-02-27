@@ -1,5 +1,6 @@
 import { toAppError } from "@/lib/error";
 import { NextRequest, NextResponse } from "next/server";
+import imageCompression from "browser-image-compression";
 
 export const currentFinancialYear = () => {
   const month = Number(
@@ -29,4 +30,13 @@ export function withErrorHandling(
       NextResponse.json({ error: appErr.message }, { status: appErr.code });
     }
   };
+}
+
+export async function compressIfNeeded(file: File): Promise<File> {
+  if (!file.type.startsWith("image/")) return file;
+  try {
+    return await imageCompression(file, { maxSizeMB: 4, useWebWorker: true });
+  } catch {
+    return file;
+  }
 }

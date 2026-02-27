@@ -9,7 +9,7 @@ import useRecordReceipt from "@/app/_hooks/useRecordReceipt";
 export default function Home() {
   const {
     file,
-    setFile,
+    handleFileChange,
     fileUrl,
     extractionStatus,
     uploadStatus,
@@ -34,7 +34,7 @@ export default function Home() {
           <FilePreview
             file={file}
             fileUrl={fileUrl}
-            setFile={setFile}
+            handleFileChange={handleFileChange}
             handleExtractFields={handleExtractFields}
           />
         )}

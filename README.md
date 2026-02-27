@@ -33,3 +33,13 @@ export const SHEET_COLUMNS = {
 **Service/route separation**
 
 Early on, business logic was mixed into route handlers. I refactored to isolate services (AI extraction, Drive upload, Sheets write) from routes, and wrapped routes in an error-handling HOF to avoid repetitive try/catch.
+
+**Debugging mobile-only failures with Safari Web Inspector**
+
+The extract-fields feature worked fine on desktop and on the local dev server tunnelled via ngrok on iPhone, but failed silently on the production (Vercel) deployment when uploading photos from an iPhone. Vercel logs showed no errors, suggesting the failure was happening before the request even reached the server.
+
+To get visibility into what was happening in iPhone Safari, I used Safari's Web Inspector.
+
+This exposed the network request failing with a 413 (payload too large). The root cause: iOS photos and screenshots exceed Vercel's **4.5MB serverless function request body limit**. The same tunneled requests succeeded locally because there's no equivalent limit on the local dev server.
+
+I decided the quickest fix would be to use an image compression library to compress files before sending them to the backend.

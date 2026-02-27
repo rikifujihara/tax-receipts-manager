@@ -8,9 +8,6 @@ export default async function Login() {
         <p className="text-sm text-slate-500 mb-3">
           Sign in to connect your google drive account
         </p>
-        <p className="md:hidden text-xs text-amber-600 mb-5">
-          Note: mobile support is currently in development
-        </p>
         <a
           href="/api/auth/google"
           className="flex items-center justify-center gap-3 w-full border border-slate-200 rounded-lg py-2.5 px-4 text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors duration-200"

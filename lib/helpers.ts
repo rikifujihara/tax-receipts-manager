@@ -35,7 +35,8 @@ export function withErrorHandling(
 export async function compressIfNeeded(file: File): Promise<File> {
   if (!file.type.startsWith("image/")) return file;
   try {
-    return await imageCompression(file, { maxSizeMB: 4, useWebWorker: true });
+    const compressed = await imageCompression(file, { maxSizeMB: 4, useWebWorker: true });
+    return new File([compressed], file.name, { type: compressed.type });
   } catch {
     return file;
   }

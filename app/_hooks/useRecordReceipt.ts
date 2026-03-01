@@ -9,25 +9,26 @@ import {
 } from "@/lib/types";
 import { useState, useEffect } from "react";
 
-// TODO: handle edge case of stale date in module
-const today = new Date().toLocaleDateString("en-CA", {
-  timeZone: "Australia/Sydney",
-});
-
-const initialFormValues: Partial<Record<ColumnKey, string>> = {
-  workRelatedPercentage: "100",
-  dateRecordCreated: today,
-};
-
-const emptyForm = (): ReceiptFormState =>
-  Object.fromEntries(
-    Object.keys(FORM_STATE_FIELDS).map((key) => [
-      key,
-      initialFormValues[key as ColumnKey] ?? "",
-    ]),
-  ) as ReceiptFormState;
-
 export default function useRecordReceipt() {
+  // Could move calculation outside of the component, but
+  // calculating today's date within the component incase re-render occurs at 12am
+  const today = new Date().toLocaleDateString("en-CA", {
+    timeZone: "Australia/Sydney",
+  });
+
+  const initialFormValues: Partial<Record<ColumnKey, string>> = {
+    workRelatedPercentage: "100",
+    dateRecordCreated: today,
+  };
+
+  const emptyForm = (): ReceiptFormState =>
+    Object.fromEntries(
+      Object.keys(FORM_STATE_FIELDS).map((key) => [
+        key,
+        initialFormValues[key as ColumnKey] ?? "",
+      ]),
+    ) as ReceiptFormState;
+
   const [file, setFile] = useState<File | null>(null);
 
   const [fileUrl, setFileUrl] = useState<string | null>(null);
@@ -77,6 +78,7 @@ export default function useRecordReceipt() {
         formData.append(key, form[key]);
       });
 
+      // TODO: extract
       await fetch("api/upload", { method: "POST", body: formData });
       setUploadStatus("success");
       setExtractionStatus("no-file");
@@ -94,6 +96,7 @@ export default function useRecordReceipt() {
       formData.append("file", file);
       formData.append("occupation", "software developer");
 
+      // TODO: extract
       const response = await fetch("api/file/extract-fields", {
         method: "POST",
         body: formData,

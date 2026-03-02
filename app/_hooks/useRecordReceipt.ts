@@ -1,9 +1,8 @@
-import { uploadReceipt } from "@/app/_api/receipts";
+import { extractFields, uploadReceipt } from "@/app/_api/receipts";
 import { FORM_STATE_FIELDS } from "@/lib/constants";
 import { compressIfNeeded } from "@/lib/helpers";
 import {
   ColumnKey,
-  ExtractedFieldsResponse,
   ExtractionStatus,
   ReceiptFormState,
   UploadStatus,
@@ -84,17 +83,7 @@ export default function useRecordReceipt() {
     try {
       if (!file) return;
       setExtractionStatus("loading");
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("occupation", "software developer");
-
-      // TODO: extract
-      const response = await fetch("api/file/extract-fields", {
-        method: "POST",
-        body: formData,
-      });
-
-      const data = (await response.json()) as ExtractedFieldsResponse;
+      const data = await extractFields({ file });
       setForm((prev) => ({ ...prev, ...data.fields }));
       setExtractionStatus("success");
     } catch {

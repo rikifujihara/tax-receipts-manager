@@ -1,4 +1,4 @@
-import { ReceiptFormState } from "@/lib/types";
+import { ExtractedFieldsResponse, ReceiptFormState } from "@/lib/types";
 
 export function uploadReceipt({
   file,
@@ -18,4 +18,17 @@ export function uploadReceipt({
   });
 
   return fetch("api/upload", { method: "POST", body: formData });
+}
+
+export async function extractFields({ file }: { file: File }) {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("occupation", "software developer");
+
+  const response = await fetch("api/file/extract-fields", {
+    method: "POST",
+    body: formData,
+  });
+
+  return (await response.json()) as ExtractedFieldsResponse;
 }

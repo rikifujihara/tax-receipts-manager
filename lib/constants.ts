@@ -23,3 +23,5 @@ export { FORM_STATE_FIELDS };
 export const SHEET_COLUMN_NAMES = Object.values(SHEET_COLUMNS);
 
 export const TOP_LEVEL_FOLDER_NAME = "easy-receipts";
+
+export const RECEIPT_FILES_FOLDER_NAME = "files";

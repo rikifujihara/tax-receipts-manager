@@ -1,4 +1,8 @@
-import { SHEET_NAME_PREFIX, TOP_LEVEL_FOLDER_NAME } from "@/lib/constants";
+import {
+  RECEIPT_FILES_FOLDER_NAME,
+  SHEET_NAME_PREFIX,
+  TOP_LEVEL_FOLDER_NAME,
+} from "@/lib/constants";
 import { getOrCreateFolder, getOrCreateSheet } from "@/lib/services/drive";
 import { currentFinancialYear } from "@/lib/helpers";
 import { Auth, drive_v3, google } from "googleapis";
@@ -23,17 +27,36 @@ export async function saveRecord({
   );
   oauth2Client.setCredentials({ refresh_token: refreshToken });
 
-  // Initialise drive client and set up folders
+  // Initialise drive client and set up/find folders
   const drive = google.drive({ version: "v3", auth: oauth2Client });
-  const l1 = await getOrCreateFolder(drive, TOP_LEVEL_FOLDER_NAME);
-  const l2 = await getOrCreateFolder(drive, currentFinancialYear(), l1);
 
-  const { receiptUrl } = await uploadFile({ file, drive, parentFolderId: l2 });
+  const topLevelFolderId = await getOrCreateFolder(
+    drive,
+    TOP_LEVEL_FOLDER_NAME,
+  );
+
+  const secondLevelFolderId = await getOrCreateFolder(
+    drive,
+    currentFinancialYear(),
+    topLevelFolderId,
+  );
+
+  const receiptFilesFolderId = await getOrCreateFolder(
+    drive,
+    RECEIPT_FILES_FOLDER_NAME,
+    secondLevelFolderId,
+  );
+
+  const { receiptUrl } = await uploadFile({
+    file,
+    drive,
+    parentFolderId: receiptFilesFolderId,
+  });
 
   await appendToSheet({
     drive,
     oauth2Client,
-    parentFolderId: l2,
+    parentFolderId: secondLevelFolderId,
     formStateFields,
     workRelatedAmount,
     receiptUrl,

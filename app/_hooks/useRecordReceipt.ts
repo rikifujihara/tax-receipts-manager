@@ -9,9 +9,7 @@ import {
 } from "@/lib/types";
 import { useState, useEffect } from "react";
 
-export default function useRecordReceipt() {
-  // Could move calculation outside of the component, but
-  // calculating today's date within the component incase re-render occurs at 12am
+function initialForm(): ReceiptFormState {
   const today = new Date().toLocaleDateString("en-CA", {
     timeZone: "Australia/Sydney",
   });
@@ -29,6 +27,10 @@ export default function useRecordReceipt() {
       ]),
     ) as ReceiptFormState;
 
+  return emptyForm();
+}
+
+export default function useRecordReceipt() {
   const [file, setFile] = useState<File | null>(null);
 
   const [fileUrl, setFileUrl] = useState<string | null>(null);
@@ -38,7 +40,7 @@ export default function useRecordReceipt() {
 
   const [uploadStatus, setUploadStatus] = useState<UploadStatus>("no-file");
 
-  const [form, setForm] = useState<ReceiptFormState>(emptyForm);
+  const [form, setForm] = useState<ReceiptFormState>(initialForm);
 
   const workRelatedAmount = (
     Number(form.amount) * Number(Number(form.workRelatedPercentage) * 0.01)
@@ -96,7 +98,7 @@ export default function useRecordReceipt() {
     setFileUrl(null);
     setExtractionStatus("no-file");
     setUploadStatus("no-file");
-    setForm(emptyForm());
+    setForm(initialForm());
   }
 
   return {

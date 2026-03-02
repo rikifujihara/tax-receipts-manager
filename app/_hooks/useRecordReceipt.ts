@@ -1,3 +1,4 @@
+import { uploadReceipt } from "@/app/_api/receipts";
 import { FORM_STATE_FIELDS } from "@/lib/constants";
 import { compressIfNeeded } from "@/lib/helpers";
 import {
@@ -70,16 +71,7 @@ export default function useRecordReceipt() {
     try {
       if (!file) return;
       setUploadStatus("loading");
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("workRelatedAmount", workRelatedAmount);
-
-      (Object.keys(form) as (keyof ReceiptFormState)[]).forEach((key) => {
-        formData.append(key, form[key]);
-      });
-
-      // TODO: extract
-      await fetch("api/upload", { method: "POST", body: formData });
+      await uploadReceipt({ file, form, workRelatedAmount });
       setUploadStatus("success");
       setExtractionStatus("no-file");
       window.scrollTo({ top: 0, behavior: "smooth" });
